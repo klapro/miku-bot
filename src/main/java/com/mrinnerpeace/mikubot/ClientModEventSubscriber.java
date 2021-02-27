@@ -1,12 +1,19 @@
 package com.mrinnerpeace.mikubot;
 
+import com.mrinnerpeace.mikubot.entities.CarEntity;
+import com.mrinnerpeace.mikubot.renderer.CarRenderer;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraftforge.event.entity.EntityMountEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -17,18 +24,17 @@ public class ClientModEventSubscriber {
 
     @SubscribeEvent
     public static void onFMLClientSetupEvent(final FMLClientSetupEvent event) {
-        RenderingRegistry.registerEntityRenderingHandler(ModEntities.MIKU.get(), new MikuRenderer.RenderFactory());
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.CAR.get(), new CarRenderer.RenderFactory());
     }
 
     @SubscribeEvent
     public static void attributes(final EntityAttributeCreationEvent event) {
-        AttributeModifierMap attributes = MobEntity.func_233666_p_().createMutableAttribute(Attributes.MOVEMENT_SPEED, (double)0.2F).createMutableAttribute(Attributes.MAX_HEALTH, 20.0D).createMutableAttribute(Attributes.ATTACK_DAMAGE, 5.0D).create();
-        event.put(ModEntities.MIKU.get(), attributes);
+        CarEntity.setAttributes(event);
     }
 
     @SubscribeEvent
     public static void onModelRegistryEvent(ModelRegistryEvent event) {
-        ModelLoader.addSpecialModel(MikuRenderer.MODEL_RESOURCE_LOCATION);
+        ModelLoader.addSpecialModel(CarRenderer.ressourceLocation);
     }
 
 }

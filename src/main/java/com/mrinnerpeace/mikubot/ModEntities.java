@@ -1,7 +1,6 @@
 package com.mrinnerpeace.mikubot;
 
-import com.mrinnerpeace.mikubot.MikuBotMod;
-import com.mrinnerpeace.mikubot.MikuEntity;
+import com.mrinnerpeace.mikubot.entities.CarEntity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
@@ -13,11 +12,11 @@ public class ModEntities {
 
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, MikuBotMod.MOD_ID);
 
-    public static final String MIKU_NAME = "miku";
-    public static final RegistryObject<EntityType<MikuEntity>> MIKU = ENTITIES.register(MIKU_NAME, () ->
-            EntityType.Builder.<MikuEntity>create(MikuEntity::new, EntityClassification.CREATURE)
+    public static final String CAR_NAME = "car";
+    public static final RegistryObject<EntityType<CarEntity>> CAR = ENTITIES.register(CAR_NAME, () ->
+            EntityType.Builder.<CarEntity>create(CarEntity::new, EntityClassification.CREATURE)
                     .size(EntityType.PLAYER.getWidth(), EntityType.PLAYER.getHeight())
-                    .build(new ResourceLocation(MikuBotMod.MOD_ID, MIKU_NAME).toString())
+                    .build(new ResourceLocation(MikuBotMod.MOD_ID, CAR_NAME).toString())
     );
 
 }

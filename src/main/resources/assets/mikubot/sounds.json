@@ -1,0 +1,6 @@
+{
+  "car_sound": {
+    "category": "record",
+    "sounds": [ "mikubot:car_sound" ]
+  }
+}

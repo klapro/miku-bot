@@ -1,7 +1,0 @@
-{
-  "loader": "forge:obj",
-  "flip-v": true,
-  "ambientToFullbright": false,
-  "materialLibraryOverride": "mikubot:models/entity/miku.mtl",
-  "model": "mikubot:models/entity/miku.obj"
-}

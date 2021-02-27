@@ -1,4 +1,4 @@
-package com.mrinnerpeace.mikubot;
+package com.mrinnerpeace.mikubot.renderer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -11,49 +11,53 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.data.EmptyModelData;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 import java.awt.*;
 
-public class MikuRenderer extends EntityRenderer<MikuEntity> {
+abstract public class Renderer3DObject<Being extends Entity> extends EntityRenderer<Being> {
 
-    public static final ResourceLocation MODEL_RESOURCE_LOCATION = new ResourceLocation("mikubot:entity/miku_wrapper");
+    private RenderRequest request = null;
 
-    public MikuRenderer(EntityRendererManager manager) {
-        super(manager);
+    abstract RenderRequest setRenderRequest();
+    abstract void animate(Being entity, MatrixStack matrix, float partialTicks);
+
+    protected Renderer3DObject(EntityRendererManager renderManager) {
+        super(renderManager);
     }
 
     @Override
-    public ResourceLocation getEntityTexture(MikuEntity entity) {
+    public ResourceLocation getEntityTexture(Being entity) {
         return AtlasTexture.LOCATION_BLOCKS_TEXTURE;
     }
 
     @Override
-    public void render(MikuEntity entity, float entityYaw, float partialTicks,
+    public void render(Being entity, float entityYaw, float partialTicks,
                        MatrixStack matrixStack, IRenderTypeBuffer renderBuffers, int packedLightIn) {
 
-        IBakedModel mikuModel = Minecraft.getInstance().getModelManager().getModel(MODEL_RESOURCE_LOCATION);
+        if (request == null) {
+            request = setRenderRequest();
+        }
+
+        IBakedModel bakedModel = Minecraft.getInstance().getModelManager().getModel(request.modelLocation);
 
         matrixStack.push();
         MatrixStack.Entry currentMatrix = matrixStack.getLast();
 
-        Color blendColour = Color.CYAN;
+        Color blendColour = Color.WHITE;
         float red = blendColour.getRed() / 255.0F;
         float green = blendColour.getGreen() / 255.0F;
         float blue = blendColour.getBlue() / 255.0F;
 
-        final float MODEL_SIZE_IN_ORIGINAL_COORDINATES = 10.0F;  // size of the wavefront model
-        final float TARGET_SIZE_WHEN_RENDERED = 1F;  // desired size when rendered (in metres)
+        matrixStack.scale(request.scale, request.scale, request.scale);
 
-        final float SCALE_FACTOR = TARGET_SIZE_WHEN_RENDERED / MODEL_SIZE_IN_ORIGINAL_COORDINATES;
-        matrixStack.scale(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR);
-
+        animate(entity, matrixStack, partialTicks);
         BlockRendererDispatcher dispatcher = Minecraft.getInstance().getBlockRendererDispatcher();
 
         IVertexBuilder vertexBuffer = renderBuffers.getBuffer(RenderType.getSolid());
-        dispatcher.getBlockModelRenderer().renderModel(currentMatrix, vertexBuffer, null, mikuModel,
+        dispatcher.getBlockModelRenderer().renderModel(currentMatrix, vertexBuffer, null, bakedModel,
                 red, green, blue, packedLightIn, OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
 
         matrixStack.pop();
@@ -61,13 +65,20 @@ public class MikuRenderer extends EntityRenderer<MikuEntity> {
         super.render(entity, entityYaw, partialTicks, matrixStack, renderBuffers, packedLightIn);
     }
 
-    public static class RenderFactory implements IRenderFactory<MikuEntity> {
+    public class RenderRequest {
 
-        @Override
-        public EntityRenderer<? super MikuEntity> createRenderFor(EntityRendererManager manager) {
-            // TODO Auto-generated method stub
-            return new MikuRenderer(manager);
+        ResourceLocation modelLocation;
+        float scale;
+
+        public RenderRequest setModelLocation(ResourceLocation modelLocation) {
+            this.modelLocation = modelLocation;
+            return this;
         }
 
+        public RenderRequest setScale(float scale) {
+            this.scale = scale;
+            return this;
+        }
     }
+
 }
